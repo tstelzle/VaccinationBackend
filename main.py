@@ -9,23 +9,29 @@ api = Api(app)
 
 class Vaccination(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
         name = request.args.get('name')
-        certificate = request.args.get('certificate')
 
         database = open('database.json', 'r')
 
         data = json.load(database)
 
         if name in data.keys():
-            return data[name], 200
+            certificate_dict = {'certificate': data[name]}
+            response = app.response_class(
+                response=json.dumps(certificate_dict),
+                status=200,
+                mimetype='application/json'
+            )
+            return response
         else:
-            return 'Name not found', 404
-
-    def post(self):
-        print('server2')
-
-        return 'post'
+            response = app.response_class(
+                response=json.dumps("Error"),
+                status=404,
+                mimetype='application/json'
+            )
+            return response
 
 
 api.add_resource(Vaccination, "/vaccination/")
